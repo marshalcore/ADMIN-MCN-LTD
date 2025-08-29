@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marshal Core | Admin Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/css/admin.css">
+  <link rel="stylesheet" href="/static/css/admin-dashboard.css">
+</head>
+<body>
+
+<header class="header-container">
+  <div class="header-logo">
+    <img src="/assets/images/logo.png" alt="Marshal Core Logo">
+  </div>
+  <div class="header-rc">
+    RC: 8405988
+  </div>
+  <div class="header-title">
+    Marshal Core Admin Portal
+  </div>
+</header>
+
+<!-- SIGNUP SECTION -->
+<section class="layout_padding section-container" id="signupSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Admin Sign Up</h2>
+      <form id="signupForm">
+        <input type="text" id="signup_fullname" name="full_name" placeholder="Full Name" required />
+        <input type="email" id="signup_email" name="email" placeholder="Email" required />
+        <input type="password" id="signup_password" name="password" placeholder="Password" required />
+        <button type="submit">Create Account</button>
+      </form>
+      <div class="auth-nav">
+        Already have an account? <a href="#" id="showLoginLink">Log In</a>
+      </div>
+      <div id="signupError" class="error-message"></div>
+      <div id="signupSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGIN SECTION -->
+<section class="layout_padding section-container active-section" id="loginSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Admin Log In</h2>
+      <form id="loginForm">
+        <input type="email" id="login_email" name="email" placeholder="Email" required />
+        <input type="password" id="login_password" name="password" placeholder="Password" required />
+        <button type="submit">Log In</button>
+      </form>
+      <div class="auth-nav">
+        Don't have an account? <a href="#" id="showSignupLink">Sign Up</a> | 
+        <a href="#" id="showForgotPasswordLink">Forgot Password?</a>
+      </div>
+      <div id="loginError" class="error-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORGOT PASSWORD SECTION -->
+<section class="layout_padding section-container" id="forgotPasswordSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Forgot Password</h2>
+      <form id="forgotPasswordForm">
+        <input type="email" id="forgot_email" name="email" placeholder="Registered Email" required />
+        <button type="submit">Send Reset Code</button>
+      </form>
+      <div class="auth-nav">
+        Remember your password? <a href="#" id="showLoginLink2">Log In</a>
+      </div>
+      <div id="forgotPasswordError" class="error-message"></div>
+      <div id="forgotPasswordSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESET PASSWORD SECTION -->
+<section class="layout_padding section-container" id="resetPasswordSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Reset Password</h2>
+      <form id="adminResetPasswordForm">
+        <input type="email" id="reset_email" name="email" placeholder="Registered Email" required />
+        <input type="text" id="reset_code" name="code" placeholder="6-digit Code" required />
+        <input type="password" id="reset_new_password" name="new_password" placeholder="New Password" required />
+        <button type="submit">Reset Password</button>
+      </form>
+      <div class="auth-nav">
+        <a href="#" id="showLoginLink3">Back to Log In</a>
+      </div>
+      <div id="adminResetPasswordError" class="error-message"></div>
+      <div id="adminResetPasswordSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- OTP VERIFICATION SECTION -->
+<section class="layout_padding section-container" id="otpSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Verify OTP</h2>
+      <p id="otp-email">Verification code sent to: <span id="otpEmailDisplay"></span></p>
+      <form id="otpForm">
+        <input type="text" id="otp_input" name="otp" placeholder="Enter 6-digit OTP" required 
+               maxlength="6" pattern="[0-9]{6}" title="Enter 6-digit code"/>
+        <button type="submit">Verify OTP</button>
+      </form>
+      <div class="auth-nav">
+        <a href="#" id="resendOtp">Resend OTP</a> | 
+        <a href="#" id="backToLogin">Back to Login</a>
+      </div>
+      <div id="otpError" class="error-message"></div>
+      <div id="otpSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD SECTION -->
+<section class="layout_padding section-container" id="dashboardSection">
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <h2>Admin Dashboard</h2>
+      <button id="logoutBtn" class="logout-btn">Log Out</button>
+    </div>
+    
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <h3>Total Applicants</h3>
+        <p id="totalApplicants">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Officers</h3>
+        <p id="totalOfficers">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Admins</h3>
+        <p id="totalAdmins">0</p>
+      </div>
+    </div>
+    
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="officersTab">Officers</button>
+      <button class="tab-btn" data-tab="applicantsTab">Applicants</button>
+      <button class="tab-btn" data-tab="adminsTab">Admins</button>
+    </div>
+    
+    <!-- Officers Tab -->
+    <div class="tab-content active" id="officersTab">
+      <div class="search-container">
+        <input type="text" id="officerSearch" placeholder="Search officers...">
+        <button id="searchOfficersBtn">Search</button>
+      </div>
+      <div class="table-container">
+        <table id="officersTable">
+          <thead>
+            <tr>
+              <th>Unique ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Rank</th>
+              <th>Position</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="officersTableBody"> </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Applicants Tab -->
+    <div class="tab-content" id="applicantsTab">
+      <div class="search-container">
+        <input type="text" id="applicantSearch" placeholder="Search applicants...">
+        <button id="searchApplicantsBtn">Search</button>
+      </div>
+      <div class="table-container">
+        <table id="applicantsTable">
+          <thead>
+            <tr>
+              <th>Unique ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="applicantsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Admins Tab -->
+    <div class="tab-content" id="adminsTab">
+      <div class="search-container">
+        <input type="text" id="adminSearch" placeholder="Search admins...">
+        <button id="searchAdminsBtn">Search</button>
+      </div>
+      <div class="table-container">
+        <table id="adminsTable">
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Super Admin</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODALS -->
+<div class="modal" id="editOfficerModal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Edit Officer</h2>
+    <form id="editOfficerForm">
+      <input type="hidden" id="editOfficerId">
+      <div class="form-group">
+        <label for="editOfficerEmail">Email</label>
+        <input type="email" id="editOfficerEmail" required>
+      </div>
+      <div class="form-group">
+        <label for="editOfficerRank">Rank</label>
+        <input type="text" id="editOfficerRank">
+      </div>
+      <div class="form-group">
+        <label for="editOfficerPosition">Position</label>
+        <input type="text" id="editOfficerPosition">
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="editApplicantModal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Edit Applicant Unique ID</h2>
+    <form id="editApplicantForm">
+      <input type="hidden" id="editApplicantId">
+      <div class="form-group">
+        <label for="editApplicantUniqueId">Unique ID</label>
+        <input type="text" id="editApplicantUniqueId" required>
+      </div>
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="resetPasswordModal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Reset Password</h2>
+    <form id="resetPasswordForm">
+      <input type="hidden" id="resetPasswordId">
+      <div class="form-group">
+        <label for="newPassword">New Password</label>
+        <input type="password" id="newPassword" required>
+      </div>
+      <button type="submit">Reset Password</button>
+    </form>
+  </div>
+</div>
+
+<footer class="footer_section">
+  <div class="container">
+    <p>&copy; 2025 Marshal Core Of Nigeria Limited. <br>All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="page-loader" id="pageLoader">Loading...</div>
+
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

@@ -1,3 +1,5 @@
+/* admin.css - Complete styles for Marshal Core Admin */
+
 /* Base styles */
 body {
   font-family: "Open Sans", sans-serif;
@@ -66,22 +68,21 @@ body {
   color: #1f233e;
 }
 
-/* Header styles */
+/* Header styles - FIXED POSITIONING */
+/* Header styles - FIXED POSITIONING */
 .header-container {
   background-color: #1f233e;
   color: #fff;
-  position: relative;
   padding: 20px 40px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   min-height: 120px;
+  position: relative;
 }
 
 .header-logo {
-  position: absolute;
-  top: 20px;
-  left: 40px;
+  flex: 0 0 auto;
 }
 
 .header-logo img {
@@ -94,12 +95,11 @@ body {
 }
 
 .header-rc {
-  position: absolute;
-  top: 20px;
-  right: 40px;
+  flex: 0 0 auto;
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
+  text-align: right;
 }
 
 .header-title {
@@ -107,6 +107,62 @@ body {
   font-size: 2rem;
   font-weight: bold;
   color: #ffffff;
+  flex: 1;
+  margin: 0 20px;
+  /* Ensure it stays centered */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  white-space: nowrap;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    padding: 15px 20px;
+    text-align: center;
+    min-height: auto;
+  }
+  
+  .header-logo {
+    margin-bottom: 10px;
+    order: 1;
+  }
+  
+  .header-rc {
+    margin-bottom: 10px;
+    order: 3;
+    text-align: center;
+  }
+  
+  .header-title {
+    position: static;
+    transform: none;
+    order: 2;
+    margin: 10px 0;
+    font-size: 1.5rem;
+    white-space: normal;
+  }
+  
+  .header-logo img {
+    height: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1.3rem;
+  }
+  
+  .header-logo img {
+    height: 60px;
+  }
+  
+  .header-rc {
+    font-size: 14px;
+  }
 }
 
 /* Auth form styles */
@@ -176,6 +232,8 @@ body {
   text-decoration: underline;
   color: #1d3a7a;
 }
+
+/* ... rest of your existing admin.css styles ... */
 
 /* Dashboard styles */
 .dashboard-container {

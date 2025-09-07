@@ -17,10 +17,10 @@ const resetPasswordSection = document.getElementById('resetPasswordSection');
 const otpSection = document.getElementById('otpSection');
 const otpForm = document.getElementById('otpForm');
 
-// Dashboard elements
+// Dashboard elements - FIXED: Removed duplicate totalAdmins declaration
 const totalApplicants = document.getElementById('totalApplicants');
 const totalOfficers = document.getElementById('totalOfficers');
-const totalAdmins = document.getElementById('totalAdmins');
+const totalAdmins = document.getElementById('totalAdmins'); // Only one declaration
 
 // Tab elements
 const tabButtons = document.querySelectorAll('.tab-btn');
@@ -90,81 +90,17 @@ function showToast(message, isSuccess = true) {
   }, 3000);
 }
 
-// API Functions
-async function makeRequest(endpoint, options = {}) {
-  const url = `${API_BASE}${endpoint}`;
-  console.log(`Making request to: ${url}`); // Debug log
-
-  // ✅ Always pull token dynamically from localStorage
-  const token = localStorage.getItem("adminToken");
-
-  // Prepare headers
-  const headers = {
-    "Content-Type": "application/json",
-    ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-    ...(options.headers || {})
-  };
-
-  // Prepare body if it exists and is an object
-  let body = options.body;
-  if (body && typeof body === "object") {
-    body = JSON.stringify(body);
-  }
-
-  try {
-    const response = await fetch(url, {
-      headers,
-      ...options,
-      body
-    });
-
-    console.log("Response status:", response.status); // Debug log
-
-    if (response.status === 204) return {};
-
-    let result;
-    try {
-      result = await response.json();
-    } catch {
-      result = {};
-    }
-    console.log("Response data:", result); // Debug log
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        // ✅ Only logout if token is invalid/expired
-        localStorage.removeItem("adminToken");
-        showSection("loginSection");
-        throw new Error("Unauthorized, please log in again.");
-      }
-      throw new Error(result.detail || result.message || `Request failed (${response.status})`);
-    }
-
-    return result;
-  } catch (err) {
-    console.error("API error details:", {
-      error: err,
-      endpoint,
-      options
-    });
-    showToast(err.message || "Something went wrong", true); // 🔔 show error but don’t force logout
-    throw err;
-  }
-}
-
-
-
 // Auth Functions
 async function adminLogin(event) {
   event.preventDefault();
   showLoader();
-  console.log("Login function started"); // Debug log
+  console.log("Login function started");
 
   const email = document.getElementById("login_email").value;
   const password = document.getElementById("login_password").value;
 
   try {
-    console.log("Attempting to send login request"); // Debug log
+    console.log("Attempting to send login request");
     
     const response = await fetch(`${API_BASE}/admin/login`, {
       method: "POST",
@@ -175,31 +111,27 @@ async function adminLogin(event) {
       body: JSON.stringify({ email, password })
     });
 
-    console.log("Received response, status:", response.status); // Debug log
+    console.log("Received response, status:", response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Login error response:", errorData); // Debug log
+      console.error("Login error response:", errorData);
       throw new Error(errorData.detail || "Login failed");
     }
 
     const data = await response.json();
-    console.log("Login successful response:", data); // Debug log
+    console.log("Login successful response:", data);
 
     if (data.requires_otp || data.status === "otp_required") {
-      // Store email + OTP purpose for verification
       localStorage.setItem("pendingAdminEmail", data.email || email);
-      localStorage.setItem("pendingOtpPurpose", "login"); // 👈 Dynamic purpose
+      localStorage.setItem("pendingOtpPurpose", "login");
 
       currentEmail = email;
       currentPurpose = "login";
 
-
-      // Show OTP section
       showSection("otpSection");
       showToast("OTP sent to your email for login");
     } else if (data.access_token) {
-      // Direct login without OTP
       localStorage.setItem("authToken", data.access_token);
       authToken = data.access_token;
       showSection("dashboardSection");
@@ -209,11 +141,11 @@ async function adminLogin(event) {
       throw new Error("Unexpected login response");
     }
   } catch (err) {
-    console.error("Login error:", err); // Debug log
+    console.error("Login error:", err);
     showToast(err.message || "Login failed. Please try again.", false);
   } finally {
     hideLoader();
-    console.log("Login function completed"); // Debug log
+    console.log("Login function completed");
   }
 }
 
@@ -227,27 +159,36 @@ async function adminSignup(event) {
   const password = form.elements["password"].value;
 
   try {
-    const response = await makeRequest("/admin/signup", {
+    const response = await fetch(`${API_BASE}/admin/signup`, {
       method: "POST",
-      body: { full_name, email, password }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ full_name, email, password })
     });
 
-    if (response.status === "otp_required") {
-  localStorage.setItem("pendingAdminEmail", email);
-  localStorage.setItem("pendingOtpPurpose", "signup"); // 👈 save purpose
-  currentEmail = email;
-  currentPurpose = "signup";
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Signup failed");
+    }
 
-  showSection("otpSection");
-  showToast("OTP sent to your email for verification");
-  } else if (data.access_token) {
-      // Direct login without OTP
+    const data = await response.json();
+
+    if (data.status === "otp_required") {
+      localStorage.setItem("pendingAdminEmail", email);
+      localStorage.setItem("pendingOtpPurpose", "signup");
+      currentEmail = email;
+      currentPurpose = "signup";
+
+      showSection("otpSection");
+      showToast("OTP sent to your email for verification");
+    } else if (data.access_token) {
       localStorage.setItem("authToken", data.access_token);
       authToken = data.access_token;
       showSection("dashboardSection");
       loadDashboard();
-      showToast("Login successful!");
-} else {
+      showToast("Signup successful!");
+    } else {
       throw new Error("Unexpected signup response");
     }
   } catch (err) {
@@ -258,13 +199,13 @@ async function adminSignup(event) {
 }
 
 let currentEmail = "";
-let currentPurpose = ""; // "signup" | "login" | "reset"
+let currentPurpose = "";
 
 async function verifyOtp(event) {
   event.preventDefault();
   const otp = document.getElementById("otp_input").value.trim();
-
   const email = currentEmail;
+
   if (!email) {
     console.error("No email found for OTP verification.");
     showToast("Error: No email found for OTP verification", true);
@@ -273,29 +214,30 @@ async function verifyOtp(event) {
 
   console.log("Verifying OTP for:", email, "| purpose:", currentPurpose);
 
-  // Pick correct endpoint based on purpose
-  let endpoint = "/admin/verify-otp"; // default → signup
+  let endpoint = "/admin/verify-otp";
   if (currentPurpose === "login") {
     endpoint = "/admin/verify-login-otp";
-  } else if (currentPurpose === "password_reset") {
-    endpoint = "/admin/verify-otp"; // Use same endpoint but handle differently
   }
 
   showLoader();
   try {
-    const payload = { email, code: otp, purpose: currentPurpose };
-    console.log("Request payload:", payload);
-
-    const data = await makeRequest(endpoint, {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
       method: "POST",
-      body: payload
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, code: otp, purpose: currentPurpose })
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "OTP verification failed");
+    }
+
+    const data = await response.json();
     console.log("OTP verification response:", data);
 
-    // Handle different success responses
     if (data.access_token) {
-      // Login success with token
       showToast("OTP verified successfully!");
       localStorage.setItem("adminToken", data.access_token);
       authToken = data.access_token;
@@ -306,17 +248,7 @@ async function verifyOtp(event) {
         showSection("dashboardSection");
         loadDashboard();
       }
-    } else if (currentPurpose === "password_reset" && (data.message && data.message.includes("verified") || data.status === "success")) {
-      // Password reset OTP verified successfully - show password reset form
-      showToast("OTP verified! Please set your new password.");
-      
-      // Store verified email for password reset
-      localStorage.setItem("verifiedResetEmail", email);
-      localStorage.setItem("verifiedOtpCode", otp);
-      
-      showSection("resetPasswordSection"); // Show password reset form
     } else if (data.message && data.message.includes("verified")) {
-      // Signup success (no token returned)
       showToast("Signup successful! Please login.");
       showSection("loginSection");
     } else {
@@ -329,24 +261,32 @@ async function verifyOtp(event) {
     hideLoader();
   }
 }
+
 async function adminForgotPassword(email) {
   showLoader();
 
   try {
-    const response = await makeRequest("/admin/forgot-password", {
+    const response = await fetch(`${API_BASE}/admin/forgot-password`, {
       method: "POST",
-      body: { email }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Failed to send reset code");
+    }
 
     showToast("Reset code sent to your email");
     
-    // Pre-fill the email field in reset form
     const resetEmailField = document.getElementById("reset_email");
     if (resetEmailField) {
       resetEmailField.value = email;
     }
     
-    showSection("resetPasswordSection"); // Go to reset password page
+    showSection("resetPasswordSection");
     
   } catch (err) {
     console.error("Forgot password error:", err);
@@ -361,7 +301,6 @@ async function adminResetPassword(event) {
   event.preventDefault();
   showLoader();
 
-  // Use the exact IDs from your HTML form
   const email = document.getElementById("reset_email")?.value;
   const code = document.getElementById("reset_code")?.value;
   const new_password = document.getElementById("reset_new_password")?.value;
@@ -375,16 +314,23 @@ async function adminResetPassword(event) {
   }
 
   try {
-    console.log("Making reset password request...");
-    const responseData = await makeRequest("/admin/reset-password", {
+    const response = await fetch(`${API_BASE}/admin/reset-password`, {
       method: "POST",
-      body: { email, code, new_password }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, code, new_password })
     });
 
-    console.log("Reset password response:", responseData);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Password reset failed");
+    }
+
+    const data = await response.json();
+    console.log("Reset password response:", data);
     showToast('Password reset successfully!');
     
-    // Clear the form
     document.getElementById("adminResetPasswordForm").reset();
     
     setTimeout(() => {
@@ -415,12 +361,18 @@ async function loadDashboard() {
       return;
     }
 
-    const stats = await makeRequest('/admin/dashboard', {
-      method: "GET",
+    const response = await fetch(`${API_BASE}/admin/dashboard`, {
       headers: {
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       }
     });
+
+    if (!response.ok) {
+      throw new Error('Failed to load dashboard');
+    }
+
+    const stats = await response.json();
 
     if (totalApplicants) totalApplicants.textContent = stats.total_applicants;
     if (totalOfficers) totalOfficers.textContent = stats.total_officers;
@@ -437,10 +389,21 @@ async function loadDashboard() {
   }
 }
 
-
 async function loadOfficers() {
   try {
-    const officers = await makeRequest('/admin/all-officers');
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/all-officers`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to load officers');
+    }
+
+    const officers = await response.json();
     const tbody = document.querySelector('#officersTable tbody');
     if (!tbody) return;
     
@@ -468,7 +431,19 @@ async function loadOfficers() {
 
 async function openEditOfficerModal(officerId) {
   try {
-    const officer = await makeRequest(`/admin/officers/${officerId}`);
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/officers/${officerId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch officer details');
+    }
+
+    const officer = await response.json();
     
     document.getElementById('editOfficerId').value = officerId;
     document.getElementById('editOfficerEmail').value = officer.email || '';
@@ -494,10 +469,20 @@ async function updateOfficer(e) {
       position: document.getElementById('editOfficerPosition').value
     };
 
-    await makeRequest(`/admin/officers/${officerId}`, {
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/officers/${officerId}`, {
       method: "PUT",
-      body: updates
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updates)
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to update officer');
+    }
     
     closeModal(editOfficerModal);
     await loadOfficers();
@@ -512,7 +497,19 @@ async function updateOfficer(e) {
 
 async function loadApplicants() {
   try {
-    const applicants = await makeRequest('/admin/all-applicants');
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/all-applicants`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to load applicants');
+    }
+
+    const applicants = await response.json();
     const tbody = document.querySelector('#applicantsTable tbody');
     if (!tbody) return;
     
@@ -540,7 +537,19 @@ async function loadApplicants() {
 
 async function openEditApplicantModal(applicantId) {
   try {
-    const applicant = await makeRequest(`/admin/applicants/${applicantId}`);
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/applicants/${applicantId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch applicant details');
+    }
+
+    const applicant = await response.json();
     
     document.getElementById('editApplicantId').value = applicantId;
     document.getElementById('editApplicantUniqueId').value = applicant.unique_id || '';
@@ -565,10 +574,20 @@ async function updateApplicantUniqueId(e) {
       return;
     }
 
-    await makeRequest(`/admin/applicants/${applicantId}`, {
+    const token = localStorage.getItem("adminToken");
+    const response = await fetch(`${API_BASE}/admin/applicants/${applicantId}`, {
       method: "PUT",
-      body: { unique_id: newUniqueId }
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ unique_id: newUniqueId })
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to update applicant');
+    }
     
     closeModal(editApplicantModal);
     await loadApplicants();
@@ -590,13 +609,18 @@ async function loadAdmins() {
       return;
     }
 
-    const admins = await makeRequest('/admin/all-admins', {
-      method: "GET",
+    const response = await fetch(`${API_BASE}/admin/all-admins`, {
       headers: {
-        "Authorization": `Bearer ${token}`
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       }
     });
 
+    if (!response.ok) {
+      throw new Error('Failed to load admins');
+    }
+
+    const admins = await response.json();
     const tbody = document.querySelector('#adminsTable tbody');
     if (!tbody) return;
     
@@ -619,7 +643,6 @@ async function loadAdmins() {
     showToast('Failed to load admins', true);
   }
 }
-
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
@@ -652,36 +675,29 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Reset password form
-if (adminResetPasswordForm) {
-  adminResetPasswordForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get values from the FORM INPUTS, not localStorage
-    const email = document.getElementById("reset_email").value;
-    const code = document.getElementById("reset_code").value;
-    const new_password = document.getElementById("reset_new_password").value;
-    
-    // Call the function with the correct parameters
-    adminResetPassword(e); // Pass the event object
-  });
-}
+  if (adminResetPasswordForm) {
+    adminResetPasswordForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      adminResetPassword(e);
+    });
+  }
 
-
-// Add these event listeners for edit forms
+  // Add these event listeners for edit forms
   const editOfficerForm = document.getElementById('editOfficerForm');
   const editApplicantForm = document.getElementById('editApplicantForm');
 
   if (editOfficerForm) {
-  editOfficerForm.addEventListener('submit', updateOfficer);
-}
+    editOfficerForm.addEventListener('submit', updateOfficer);
+  }
 
   if (editApplicantForm) {
-  editApplicantForm.addEventListener('submit', updateApplicantUniqueId);
-}
+    editApplicantForm.addEventListener('submit', updateApplicantUniqueId);
+  }
+
   // Logout button
   if (logoutBtn) {
     logoutBtn.addEventListener('click', adminLogout);
-}
+  }
 
   // Tab navigation
   tabButtons.forEach(button => {
@@ -757,12 +773,12 @@ if (adminResetPasswordForm) {
           body: JSON.stringify({ email, purpose: "admin_login" })
         });
 
-        const data = await response.json();
-        
         if (!response.ok) {
-          throw new Error(data.detail || "Failed to resend OTP");
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Failed to resend OTP");
         }
-        
+
+        const data = await response.json();
         showToast("New OTP code sent!");
       } catch (err) {
         showToast(err.message || "Failed to resend OTP", false);
@@ -812,11 +828,22 @@ if (adminResetPasswordForm) {
       if (!confirm(`Are you sure you want to delete admin: ${adminEmail}?`)) return;
 
       try {
-        await makeRequest(`/admin/delete-admin/${encodeURIComponent(adminEmail)}`, {
-          method: "DELETE"
+        const token = localStorage.getItem("adminToken");
+        const response = await fetch(`${API_BASE}/admin/delete-admin/${encodeURIComponent(adminEmail)}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
         });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Failed to delete admin");
+        }
+
         showToast(`Admin ${adminEmail} deleted successfully`, true);
-        loadAdmins(); // refresh table
+        loadAdmins();
       } catch (err) {
         console.error('Error deleting admin:', err);
         showToast('Failed to delete admin', false);

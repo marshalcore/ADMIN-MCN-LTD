@@ -1,6 +1,6 @@
 // Configuration
 const API_BASE = "https://backend-mcn-ltd.onrender.com";
-let authToken = localStorage.getItem('authToken');
+let authToken = localStorage.getItem('adminToken') || localStorage.getItem('authToken');
 
 // DOM Elements
 const pageLoader = document.getElementById('pageLoader');
@@ -17,10 +17,10 @@ const resetPasswordSection = document.getElementById('resetPasswordSection');
 const otpSection = document.getElementById('otpSection');
 const otpForm = document.getElementById('otpForm');
 
-// Dashboard elements - FIXED: Removed duplicate totalAdmins declaration
+// Dashboard elements
 const totalApplicants = document.getElementById('totalApplicants');
 const totalOfficers = document.getElementById('totalOfficers');
-const totalAdmins = document.getElementById('totalAdmins'); // Only one declaration
+const totalAdmins = document.getElementById('totalAdmins');
 
 // Tab elements
 const tabButtons = document.querySelectorAll('.tab-btn');
@@ -90,6 +90,53 @@ function showToast(message, isSuccess = true) {
   }, 3000);
 }
 
+// Token management functions
+function storeToken(token) {
+  localStorage.setItem('adminToken', token);
+  authToken = token;
+}
+
+function getToken() {
+  return localStorage.getItem('adminToken');
+}
+
+function removeToken() {
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('authToken');
+  authToken = null;
+}
+
+function isAuthenticated() {
+  return !!getToken();
+}
+
+// API request function with auth header
+async function makeAuthenticatedRequest(url, options = {}) {
+  const token = getToken();
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const defaultOptions = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  };
+
+  const response = await fetch(url, { ...defaultOptions, ...options });
+  
+  if (response.status === 401) {
+    // Token is invalid or expired
+    removeToken();
+    showSection('loginSection');
+    throw new Error('Session expired. Please log in again.');
+  }
+  
+  return response;
+}
+
 // Auth Functions
 async function adminLogin(event) {
   event.preventDefault();
@@ -124,16 +171,15 @@ async function adminLogin(event) {
 
     if (data.requires_otp || data.status === "otp_required") {
       localStorage.setItem("pendingAdminEmail", data.email || email);
-      localStorage.setItem("pendingOtpPurpose", "login");
+      localStorage.setItem("pendingOtpPurpose", "admin_login");
 
       currentEmail = email;
-      currentPurpose = "login";
+      currentPurpose = "admin_login";
 
       showSection("otpSection");
       showToast("OTP sent to your email for login");
     } else if (data.access_token) {
-      localStorage.setItem("authToken", data.access_token);
-      authToken = data.access_token;
+      storeToken(data.access_token);
       showSection("dashboardSection");
       loadDashboard();
       showToast("Login successful!");
@@ -176,15 +222,14 @@ async function adminSignup(event) {
 
     if (data.status === "otp_required") {
       localStorage.setItem("pendingAdminEmail", email);
-      localStorage.setItem("pendingOtpPurpose", "signup");
+      localStorage.setItem("pendingOtpPurpose", "admin_signup");
       currentEmail = email;
-      currentPurpose = "signup";
+      currentPurpose = "admin_signup";
 
       showSection("otpSection");
       showToast("OTP sent to your email for verification");
     } else if (data.access_token) {
-      localStorage.setItem("authToken", data.access_token);
-      authToken = data.access_token;
+      storeToken(data.access_token);
       showSection("dashboardSection");
       loadDashboard();
       showToast("Signup successful!");
@@ -214,14 +259,9 @@ async function verifyOtp(event) {
 
   console.log("Verifying OTP for:", email, "| purpose:", currentPurpose);
 
-  let endpoint = "/admin/verify-otp";
-  if (currentPurpose === "login") {
-    endpoint = "/admin/verify-login-otp";
-  }
-
   showLoader();
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(`${API_BASE}/admin/verify-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -239,8 +279,7 @@ async function verifyOtp(event) {
 
     if (data.access_token) {
       showToast("OTP verified successfully!");
-      localStorage.setItem("adminToken", data.access_token);
-      authToken = data.access_token;
+      storeToken(data.access_token);
       
       if (currentPurpose === "password_reset") {
         showSection("loginSection");
@@ -345,28 +384,19 @@ async function adminResetPassword(event) {
 }
 
 function adminLogout() {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('pendingAdminEmail');
-  authToken = null;
+  removeToken();
   showSection('loginSection');
 }
 
 async function loadDashboard() {
+  if (!isAuthenticated()) {
+    showSection("loginSection");
+    return;
+  }
+  
   showLoader();
   try {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      console.error("No token found. Redirecting to login.");
-      showSection("loginSection");
-      return;
-    }
-
-    const response = await fetch(`${API_BASE}/admin/dashboard`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/dashboard`);
 
     if (!response.ok) {
       throw new Error('Failed to load dashboard');
@@ -391,13 +421,7 @@ async function loadDashboard() {
 
 async function loadOfficers() {
   try {
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/all-officers`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/all-officers`);
 
     if (!response.ok) {
       throw new Error('Failed to load officers');
@@ -431,13 +455,7 @@ async function loadOfficers() {
 
 async function openEditOfficerModal(officerId) {
   try {
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/officers/${officerId}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/officers/${officerId}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch officer details');
@@ -469,13 +487,8 @@ async function updateOfficer(e) {
       position: document.getElementById('editOfficerPosition').value
     };
 
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/officers/${officerId}`, {
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/officers/${officerId}`, {
       method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify(updates)
     });
 
@@ -497,13 +510,7 @@ async function updateOfficer(e) {
 
 async function loadApplicants() {
   try {
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/all-applicants`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/all-applicants`);
 
     if (!response.ok) {
       throw new Error('Failed to load applicants');
@@ -537,13 +544,7 @@ async function loadApplicants() {
 
 async function openEditApplicantModal(applicantId) {
   try {
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/applicants/${applicantId}`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/applicants/${applicantId}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch applicant details');
@@ -574,13 +575,8 @@ async function updateApplicantUniqueId(e) {
       return;
     }
 
-    const token = localStorage.getItem("adminToken");
-    const response = await fetch(`${API_BASE}/admin/applicants/${applicantId}`, {
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/applicants/${applicantId}`, {
       method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({ unique_id: newUniqueId })
     });
 
@@ -602,19 +598,13 @@ async function updateApplicantUniqueId(e) {
 
 async function loadAdmins() {
   try {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
+    if (!isAuthenticated()) {
       console.error("No token found. Redirecting to login.");
       showSection("loginSection");
       return;
     }
 
-    const response = await fetch(`${API_BASE}/admin/all-admins`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await makeAuthenticatedRequest(`${API_BASE}/admin/all-admins`);
 
     if (!response.ok) {
       throw new Error('Failed to load admins');
@@ -647,7 +637,7 @@ async function loadAdmins() {
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
   // Check authentication status
-  if (authToken) {
+  if (isAuthenticated()) {
     showSection('dashboardSection');
     loadDashboard();
   } else {
@@ -765,12 +755,13 @@ document.addEventListener('DOMContentLoaded', function() {
       showLoader();
       
       const email = localStorage.getItem("pendingAdminEmail");
+      const purpose = localStorage.getItem("pendingOtpPurpose") || "admin_login";
       
       try {
         const response = await fetch(`${API_BASE}/admin/resend-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, purpose: "admin_login" })
+          body: JSON.stringify({ email, purpose })
         });
 
         if (!response.ok) {
@@ -828,13 +819,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!confirm(`Are you sure you want to delete admin: ${adminEmail}?`)) return;
 
       try {
-        const token = localStorage.getItem("adminToken");
-        const response = await fetch(`${API_BASE}/admin/delete-admin/${encodeURIComponent(adminEmail)}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+        const response = await makeAuthenticatedRequest(`${API_BASE}/admin/delete-admin/${encodeURIComponent(adminEmail)}`, {
+          method: "DELETE"
         });
 
         if (!response.ok) {

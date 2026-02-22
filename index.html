@@ -2,193 +2,948 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Marshal Core | Admin Portal</title>
+  <title>MCN-NG | Admin Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="assets/css/admin.css">
-<link rel="stylesheet" href="assets/css/admin-dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Basic styles to make it functional if CSS files are missing */
-    body {
-      font-family: Arial, sans-serif;
+    /* Reset and Base Styles */
+    * {
       margin: 0;
       padding: 0;
-      background-color: #f5f5f5;
+      box-sizing: border-box;
     }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Header Styles */
     .header-container {
-      background-color: #2c3e50;
-      color: white;
-      padding: 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-logo img {
+      height: 40px;
+      width: auto;
+    }
+
+    .header-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #2c3e50;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    .header-rc {
+      background: #2c3e50;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Section Container */
     .section-container {
       display: none;
-      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
+
     .active-section {
       display: block;
+      animation: fadeIn 0.5s ease;
     }
-    .auth-form-container {
-      max-width: 400px;
-      margin: 0 auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    input {
+
+    /* Auth Forms */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - 200px);
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 3rem;
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
+      max-width: 450px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    button {
-      background-color: #2c3e50;
+
+    .auth-card h2 {
+      color: #2c3e50;
+      margin-bottom: 2rem;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #4a5568;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 10px 15px;
+      padding: 1rem 2rem;
       border: none;
-      border-radius: 4px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s ease;
       width: 100%;
-      margin-top: 10px;
+      margin-top: 1rem;
     }
-    .auth-nav {
-      margin-top: 15px;
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .auth-links {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #718096;
+    }
+
+    .auth-links a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 0.5rem;
+    }
+
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Dashboard Styles */
+    .dashboard-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .dashboard-header h2 {
+      color: #2c3e50;
+      font-size: 2rem;
+    }
+
+    .logout-btn {
+      background: #e53e3e;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #c53030;
+      transform: translateY(-2px);
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+
+    .stat-card p {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #718096;
+      cursor: pointer;
+      border-radius: 10px 10px 0 0;
+      transition: all 0.3s ease;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(113, 128, 150, 0.1);
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Tables */
+    .table-container {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
+    }
+
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    th {
+      padding: 1.25rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    td {
+      padding: 1rem;
+      color: #4a5568;
+      white-space: nowrap;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0.25rem;
+      white-space: nowrap;
+    }
+
+    .action-btn.view {
+      background: #4299e1;
+      color: white;
+    }
+
+    .action-btn.view:hover {
+      background: #3182ce;
+    }
+
+    .action-btn.edit {
+      background: #48bb78;
+      color: white;
+    }
+
+    .action-btn.edit:hover {
+      background: #38a169;
+    }
+
+    .action-btn.delete {
+      background: #e53e3e;
+      color: white;
+    }
+
+    .action-btn.delete:hover {
+      background: #c53030;
+    }
+
+    .action-btn.approve {
+      background: #48bb78;
+      color: white;
+    }
+
+    .action-btn.approve:hover {
+      background: #38a169;
+    }
+
+    .action-btn.reject {
+      background: #ed8936;
+      color: white;
+    }
+
+    .action-btn.reject:hover {
+      background: #dd6b20;
+    }
+
+    .action-btn.verify {
+      background: #9f7aea;
+      color: white;
+    }
+
+    .action-btn.verify:hover {
+      background: #805ad5;
+    }
+
+    .action-btn.reset {
+      background: #ed8936;
+      color: white;
+    }
+
+    .action-btn.reset:hover {
+      background: #dd6b20;
+    }
+
+    .action-btn.pdf {
+      background: #4fd1c7;
+      color: white;
+    }
+
+    .action-btn.pdf:hover {
+      background: #38b2ac;
+    }
+
+    /* Search Container */
+    .search-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-container input {
+      flex: 1;
+      min-width: 200px;
+      padding: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-container input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-container button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0 2rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .search-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-pending {
+      background: rgba(237, 137, 54, 0.1);
+      color: #dd6b20;
+    }
+
+    .status-verified {
+      background: rgba(72, 187, 120, 0.1);
+      color: #38a169;
+    }
+
+    .status-approved {
+      background: rgba(72, 187, 120, 0.2);
+      color: #2f855a;
+      border: 1px solid #38a169;
+    }
+
+    .status-rejected {
+      background: rgba(229, 62, 62, 0.1);
+      color: #c53030;
+    }
+
+    .status-active {
+      background: rgba(66, 153, 225, 0.1);
+      color: #3182ce;
+    }
+
+    .status-inactive {
+      background: rgba(160, 174, 192, 0.1);
+      color: #718096;
+    }
+
+    /* Officer ID Badge */
+    .officer-id {
+      font-family: 'Courier New', monospace;
+      background: #f7fafc;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    /* Filter Controls */
+    .filter-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: white;
+      min-width: 150px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      position: sticky;
+      top: 0;
+      background: white;
+      padding: 1rem 0;
+      z-index: 1;
+    }
+
+    .modal-header h2 {
+      color: #2c3e50;
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #718096;
+      cursor: pointer;
+      padding: 0.5rem;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      color: #2c3e50;
+    }
+
+    /* Officer Details Grid */
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .detail-item {
+      margin-bottom: 1rem;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+    }
+
+    .detail-value {
+      color: #2d3748;
+      padding: 0.5rem;
+      background: #f7fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* Toast Notifications */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      z-index: 1001;
+      opacity: 0;
+      transform: translateX(100px);
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    }
+
+    /* Loader */
+    .loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(5px);
+      z-index: 1002;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loader-content {
       text-align: center;
     }
-    .error-message {
-      color: red;
-      margin-top: 10px;
+
+    .loader-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #e2e8f0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
     }
-    .success-message {
-      color: green;
-      margin-top: 10px;
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    .footer_section {
+      text-align: center;
+      color: white;
+      margin-top: 2rem;
+      padding: 1rem;
+      opacity: 0.8;
+    }
+
+    /* Document Status */
+    .document-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .document-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .document-present {
+      background: rgba(72, 187, 120, 0.1);
+      color: #38a169;
+    }
+
+    .document-missing {
+      background: rgba(229, 62, 62, 0.1);
+      color: #c53030;
+    }
+
+    /* Approval Actions */
+    .approval-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .dashboard-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .admin-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .tab-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+
+      .search-container {
+        flex-direction: column;
+      }
+
+      .search-container input,
+      .search-container button {
+        width: 100%;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #718096;
+    }
+
+    .empty-state h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      opacity: 0.8;
+    }
+
+    /* Action Menu */
+    .action-menu {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Refresh Button */
+    .refresh-btn {
+      background: #4fd1c7;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #38b2ac;
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
 
+<!-- Loader -->
+<div class="loader" id="loader">
+  <div class="loader-content">
+    <div class="loader-spinner"></div>
+    <p>Loading...</p>
+  </div>
+</div>
+
+<!-- Header -->
 <header class="header-container">
   <div class="header-logo">
-    <img src="assets/images/logo.png" alt="Marshal Core Logo">
+    <div class="header-title">Marshal Core Admin Portal</div>
   </div>
-  <div class="header-rc">
-    RC: 8405988
-  </div>
-  <div class="header-title">
-    Marshal Core Admin Portal
-  </div>
+  <div class="header-rc">RC: 8405988</div>
 </header>
 
-<!-- SIGNUP SECTION -->
-<section class="layout_padding section-container" id="signupSection">
-  <div class="container">
-    <div class="auth-form-container">
-      <h2>Admin Sign Up</h2>
-      <form id="signupForm">
-        <input type="text" id="signup_fullname" name="full_name" placeholder="Full Name" required />
-        <input type="email" id="signup_email" name="email" placeholder="Email" required />
-        <input type="password" id="signup_password" name="password" placeholder="Password" required />
-        <button type="submit">Create Account</button>
-      </form>
-      <div class="auth-nav">
-        Already have an account? <a href="#" id="showLoginLink">Log In</a>
-      </div>
-      <div id="signupError" class="error-message"></div>
-      <div id="signupSuccess" class="success-message"></div>
-    </div>
-  </div>
-</section>
+<!-- Toast Container -->
+<div id="toastContainer"></div>
 
-<!-- LOGIN SECTION -->
-<section class="layout_padding section-container active-section" id="loginSection">
-  <div class="container">
-    <div class="auth-form-container">
-      <h2>Admin Log In</h2>
+<!-- Login Section -->
+<section class="section-container active-section" id="loginSection">
+  <div class="auth-container">
+    <div class="auth-card">
+      <h2>Admin Login</h2>
       <form id="loginForm">
-        <input type="email" id="login_email" name="email" placeholder="Email" required />
-        <input type="password" id="login_password" name="password" placeholder="Password" required />
-        <button type="submit">Log In</button>
+        <div class="form-group">
+          <label for="login_email">Email Address</label>
+          <input type="email" id="login_email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="login_password">Password</label>
+          <input type="password" id="login_password" class="form-control" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
       </form>
-      <div class="auth-nav">
-        Don't have an account? <a href="#" id="showSignupLink">Sign Up</a> | 
+      <div class="auth-links">
         <a href="#" id="showForgotPasswordLink">Forgot Password?</a>
+        | 
+        <a href="#" id="showSignupLink">Create Account</a>
       </div>
-      <div id="loginError" class="error-message"></div>
     </div>
   </div>
 </section>
 
-<!-- FORGOT PASSWORD SECTION -->
-<section class="layout_padding section-container" id="forgotPasswordSection">
-  <div class="container">
-    <div class="auth-form-container">
-      <h2>Forgot Password</h2>
-      <form id="forgotPasswordForm">
-        <input type="email" id="forgot_email" name="email" placeholder="Registered Email" required />
-        <button type="submit">Send Reset Code</button>
+<!-- Signup Section -->
+<section class="section-container" id="signupSection">
+  <div class="auth-container">
+    <div class="auth-card">
+      <h2>Create Admin Account</h2>
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="signup_fullname">Full Name</label>
+          <input type="text" id="signup_fullname" class="form-control" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="signup_email">Email Address</label>
+          <input type="email" id="signup_email" class="form-control" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="signup_password">Password</label>
+          <input type="password" id="signup_password" class="form-control" placeholder="Create a password" required>
+        </div>
+        <button type="submit" class="btn">Create Account</button>
       </form>
-      <div class="auth-nav">
-        Remember your password? <a href="#" id="showLoginLink2">Log In</a>
+      <div class="auth-links">
+        Already have an account? <a href="#" id="showLoginLink">Login</a>
       </div>
-      <div id="forgotPasswordError" class="error-message"></div>
-      <div id="forgotPasswordSuccess" class="success-message"></div>
     </div>
   </div>
 </section>
 
-<!-- RESET PASSWORD SECTION -->
-<section class="layout_padding section-container" id="resetPasswordSection">
-  <div class="container">
-    <div class="auth-form-container">
-      <h2>Reset Password</h2>
-      <form id="adminResetPasswordForm">
-        <input type="email" id="reset_email" name="email" placeholder="Registered Email" required />
-        <input type="text" id="reset_code" name="code" placeholder="6-digit Code" required />
-        <input type="password" id="reset_new_password" name="new_password" placeholder="New Password" required />
-        <button type="submit">Reset Password</button>
-      </form>
-      <div class="auth-nav">
-        <a href="#" id="showLoginLink3">Back to Log In</a>
-      </div>
-      <div id="adminResetPasswordError" class="error-message"></div>
-      <div id="adminResetPasswordSuccess" class="success-message"></div>
-    </div>
-  </div>
-</section>
-
-<!-- OTP VERIFICATION SECTION -->
-<section class="layout_padding section-container" id="otpSection">
-  <div class="container">
-    <div class="auth-form-container">
+<!-- OTP Verification Section -->
+<section class="section-container" id="otpSection">
+  <div class="auth-container">
+    <div class="auth-card">
       <h2>Verify OTP</h2>
-      <p id="otp-email">Verification code sent to: <span id="otpEmailDisplay"></span></p>
+      <p class="otp-instructions" id="otpInstructions">Enter the 6-digit code sent to your email</p>
       <form id="otpForm">
-        <input type="text" id="otp_input" name="otp" placeholder="Enter 6-digit OTP" required 
-               maxlength="6" pattern="[0-9]{6}" title="Enter 6-digit code" autocomplete="off"/>
-        <button type="submit">Verify OTP</button>
+        <div class="form-group">
+          <label for="otp_code">OTP Code</label>
+          <input type="text" id="otp_code" class="form-control" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" required>
+        </div>
+        <button type="submit" class="btn">Verify Code</button>
       </form>
-      <div class="auth-nav">
-        <a href="#" id="resendOtp">Resend OTP</a> | 
-        <a href="#" id="backToLogin">Back to Login</a>
+      <div class="auth-links">
+        <a href="#" id="resendOtp">Resend OTP</a>
+        | 
+        <a href="#" id="otpBackToLogin">Back to Login</a>
       </div>
-      <div id="otpError" class="error-message"></div>
-      <div id="otpSuccess" class="success-message"></div>
     </div>
   </div>
 </section>
 
-<!-- DASHBOARD SECTION -->
-<section class="layout_padding section-container" id="dashboardSection">
-  <div class="container dashboard-container">
+<!-- Dashboard Section -->
+<section class="section-container" id="dashboardSection">
+  <div class="dashboard-container">
     <div class="dashboard-header">
       <h2>Admin Dashboard</h2>
-      <button id="logoutBtn" class="logout-btn">Log Out</button>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
     </div>
-    
-    <div class="dashboard-stats">
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
       <div class="stat-card">
         <h3>Total Applicants</h3>
         <p id="totalApplicants">0</p>
@@ -198,48 +953,43 @@
         <p id="totalOfficers">0</p>
       </div>
       <div class="stat-card">
-        <h3>Total Admins</h3>
-        <p id="totalAdmins">0</p>
+        <h3>Total Existing Officers</h3>
+        <p id="totalExistingOfficers">0</p>
+      </div>
+      <div class="stat-card">
+        <h3>Pending Approvals</h3>
+        <p id="pendingApprovals">0</p>
       </div>
     </div>
-    
+
+    <!-- Tabs -->
     <div class="admin-tabs">
-      <button class="tab-btn active" data-tab="officersTab">Officers</button>
+      <button class="tab-btn active" data-tab="dashboardTab">Dashboard</button>
       <button class="tab-btn" data-tab="applicantsTab">Applicants</button>
+      <button class="tab-btn" data-tab="officersTab">Officers</button>
+      <button class="tab-btn" data-tab="existingOfficersTab">Existing Officers</button>
       <button class="tab-btn" data-tab="adminsTab">Admins</button>
     </div>
-    
-    <!-- Officers Tab -->
-    <div class="tab-content active" id="officersTab">
-      <div class="search-container">
-        <input type="text" id="officerSearch" placeholder="Search officers...">
-        <button id="searchOfficersBtn">Search</button>
-      </div>
-      <div class="table-container">
-        <table id="officersTable">
-          <thead>
-            <tr>
-              <th>Unique ID</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Rank</th>
-              <th>Position</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="officersTableBody"> </tbody>
-        </table>
+
+    <!-- Dashboard Tab -->
+    <div class="tab-content active" id="dashboardTab">
+      <div class="empty-state">
+        <h3>Welcome to Admin Dashboard</h3>
+        <p>Select a tab above to manage different sections</p>
       </div>
     </div>
-    
+
     <!-- Applicants Tab -->
     <div class="tab-content" id="applicantsTab">
       <div class="search-container">
-        <input type="text" id="applicantSearch" placeholder="Search applicants...">
-        <button id="searchApplicantsBtn">Search</button>
+        <input type="text" id="searchApplicants" placeholder="Search applicants...">
+        <button class="btn" onclick="adminApp.searchTable('applicants')">Search</button>
+        <button class="refresh-btn" onclick="adminApp.loadApplicants()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
       </div>
       <div class="table-container">
-        <table id="applicantsTable">
+        <table>
           <thead>
             <tr>
               <th>Unique ID</th>
@@ -250,132 +1000,1003 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="applicantsTableBody"></tbody>
+          <tbody id="applicantsTableBody">
+            <tr><td colspan="6" class="empty-state">Click refresh to load applicants</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
-    
+
+    <!-- Officers Tab -->
+    <div class="tab-content" id="officersTab">
+      <div class="search-container">
+        <input type="text" id="searchOfficers" placeholder="Search officers...">
+        <button class="btn" onclick="adminApp.searchTable('officers')">Search</button>
+        <button class="refresh-btn" onclick="adminApp.loadOfficers()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Unique ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Rank</th>
+              <th>Position</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="officersTableBody">
+            <tr><td colspan="6" class="empty-state">Click refresh to load officers</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EXISTING OFFICERS TAB -->
+    <div class="tab-content" id="existingOfficersTab">
+      <div class="filter-container">
+        <div class="search-container">
+          <input type="text" id="searchExistingOfficers" placeholder="Search by officer ID, name, email...">
+          <button class="btn" onclick="adminApp.searchTable('existingOfficers')">Search</button>
+          <button class="refresh-btn" onclick="adminApp.loadExistingOfficers()">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+        <select id="statusFilter" class="filter-select" onchange="adminApp.loadExistingOfficers()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="verified">Verified</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Officer ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Rank</th>
+              <th>Position</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="existingOfficersTableBody">
+            <tr><td colspan="7" class="empty-state">Click refresh to load existing officers</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Admins Tab -->
     <div class="tab-content" id="adminsTab">
       <div class="search-container">
-        <input type="text" id="adminSearch" placeholder="Search admins...">
-        <button id="searchAdminsBtn">Search</button>
+        <input type="text" id="searchAdmins" placeholder="Search admins...">
+        <button class="btn" onclick="adminApp.searchTable('admins')">Search</button>
+        <button class="refresh-btn" onclick="adminApp.loadAdmins()">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
       </div>
       <div class="table-container">
-        <table id="adminsTable">
+        <table>
           <thead>
             <tr>
               <th>Full Name</th>
               <th>Email</th>
               <th>Super Admin</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody id="adminsTableBody">
+            <tr><td colspan="5" class="empty-state">Click refresh to load admins</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MODALS -->
-<div class="modal" id="editOfficerModal">
+<!-- Existing Officer Details Modal -->
+<div class="modal" id="existingOfficerModal">
   <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <h2>Edit Officer</h2>
-    <form id="editOfficerForm">
-      <input type="hidden" id="editOfficerId">
-      <div class="form-group">
-        <label for="editOfficerEmail">Email</label>
-        <input type="email" id="editOfficerEmail" required>
-      </div>
-      <div class="form-group">
-        <label for="editOfficerRank">Rank</label>
-        <input type="text" id="editOfficerRank">
-      </div>
-      <div class="form-group">
-        <label for="editOfficerPosition">Position</label>
-        <input type="text" id="editOfficerPosition">
-      </div>
-      <button type="submit">Save Changes</button>
-    </form>
+    <div class="modal-header">
+      <h2>Existing Officer Details</h2>
+      <button class="close-btn" onclick="closeModal('existingOfficerModal')">&times;</button>
+    </div>
+    <div id="existingOfficerDetails">
+      <!-- Details will be loaded here -->
+    </div>
   </div>
 </div>
 
-<div class="modal" id="editApplicantModal">
+<!-- Update Status Modal -->
+<div class="modal" id="updateStatusModal">
   <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <h2>Edit Applicant Unique ID</h2>
-    <form id="editApplicantForm">
-      <input type="hidden" id="editApplicantId">
-      <div class="form-group">
-        <label for="editApplicantUniqueId">Unique ID</label>
-        <input type="text" id="editApplicantUniqueId" required>
-      </div>
-      <button type="submit">Save Changes</button>
-    </form>
-  </div>
-</div>
-
-<div class="modal" id="resetPasswordModal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <h2>Reset Password</h2>
-    <form id="resetPasswordForm">
-      <input type="hidden" id="resetPasswordId">
-      <div class="form-group">
-        <label for="newPassword">New Password</label>
-        <input type="password" id="newPassword" required>
-      </div>
-      <button type="submit">Reset Password</button>
-    </form>
+    <div class="modal-header">
+      <h2>Update Officer Status</h2>
+      <button class="close-btn" onclick="closeModal('updateStatusModal')">&times;</button>
+    </div>
+    <input type="hidden" id="updateOfficerId">
+    <div class="form-group">
+      <label for="newStatus">New Status</label>
+      <select id="newStatus" class="form-control">
+        <option value="pending">Pending</option>
+        <option value="verified">Verified</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="statusReason">Reason (Optional)</label>
+      <textarea id="statusReason" class="form-control" rows="3" placeholder="Enter reason for status change..."></textarea>
+    </div>
+    <button class="btn" onclick="adminApp.updateOfficerStatus()">Update Status</button>
   </div>
 </div>
 
 <footer class="footer_section">
   <div class="container">
-    <p>&copy; 2025 Marshal Core Of Nigeria Limited. <br>All rights reserved.</p>
+    <p>&copy; 2025 Marshal Core Of Nigeria. All rights reserved.</p>
   </div>
 </footer>
 
-<div class="page-loader" id="pageLoader">Loading...</div>
-
-<script src="assets/js/admin.js"></script>
 <script>
-  // Basic navigation functionality if admin.js is missing
-  document.addEventListener('DOMContentLoaded', function() {
-    // Show/hide sections
-    function showSection(sectionId) {
-      document.querySelectorAll('.section-container').forEach(section => {
-        section.classList.remove('active-section');
-      });
-      document.getElementById(sectionId).classList.add('active-section');
+// Configuration
+const API_BASE = "https://backend-mcn-ltd.onrender.com";
+let adminToken = localStorage.getItem('adminToken');
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+  initializeApp();
+});
+
+class AdminApp {
+  constructor() {
+    this.token = adminToken;
+  }
+
+  initialize() {
+    this.setupEventListeners();
+    this.checkAuth();
+  }
+
+  checkAuth() {
+    if (this.token) {
+      showSection('dashboardSection');
+      this.loadDashboard();
+    } else {
+      showSection('loginSection');
     }
+  }
+
+  setupEventListeners() {
+    // Login form
+    document.getElementById('loginForm')?.addEventListener('submit', (e) => this.handleLogin(e));
+    
+    // Signup form
+    document.getElementById('signupForm')?.addEventListener('submit', (e) => this.handleSignup(e));
+    
+    // OTP form
+    document.getElementById('otpForm')?.addEventListener('submit', (e) => this.handleOtpVerification(e));
     
     // Navigation links
-    document.getElementById('showLoginLink')?.addEventListener('click', function(e) {
+    document.getElementById('showLoginLink')?.addEventListener('click', (e) => {
       e.preventDefault();
       showSection('loginSection');
     });
     
-    document.getElementById('showSignupLink')?.addEventListener('click', function(e) {
+    document.getElementById('showSignupLink')?.addEventListener('click', (e) => {
       e.preventDefault();
       showSection('signupSection');
     });
     
-    document.getElementById('showForgotPasswordLink')?.addEventListener('click', function(e) {
+    document.getElementById('showForgotPasswordLink')?.addEventListener('click', (e) => {
       e.preventDefault();
-      showSection('forgotPasswordSection');
+      this.showForgotPassword();
     });
     
-    // Form submissions (basic prevention)
-    document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('This would connect to your backend in a live environment.');
+    document.getElementById('otpBackToLogin')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      showSection('loginSection');
+    });
+    
+    document.getElementById('resendOtp')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.resendOtp();
+    });
+    
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
+    
+    // Tab navigation
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        this.switchTab(tabId);
       });
     });
+  }
+
+  showForgotPassword() {
+    const email = prompt("Enter your admin email to reset password:");
+    if (email) {
+      this.requestPasswordReset(email);
+    }
+  }
+
+  async handleLogin(e) {
+    e.preventDefault();
+    showLoader();
+    
+    const email = document.getElementById('login_email').value;
+    const password = document.getElementById('login_password').value;
+    
+    try {
+      const response = await fetch(`${API_BASE}/admin/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Login failed');
+      }
+      
+      const data = await response.json();
+      
+      if (data.requires_otp || data.status === 'success') {
+        localStorage.setItem('pendingAdminEmail', email);
+        localStorage.setItem('pendingOtpPurpose', 'admin_login');
+        showSection('otpSection');
+        showToast('OTP sent to your email');
+      }
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async handleSignup(e) {
+    e.preventDefault();
+    showLoader();
+    
+    const full_name = document.getElementById('signup_fullname').value;
+    const email = document.getElementById('signup_email').value;
+    const password = document.getElementById('signup_password').value;
+    
+    try {
+      const response = await fetch(`${API_BASE}/admin/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ full_name, email, password })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Signup failed');
+      }
+      
+      const data = await response.json();
+      
+      if (data.id) {
+        localStorage.setItem('pendingAdminEmail', email);
+        localStorage.setItem('pendingOtpPurpose', 'admin_signup');
+        showSection('otpSection');
+        showToast('Account created! Please verify with OTP sent to your email');
+      }
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async handleOtpVerification(e) {
+    e.preventDefault();
+    showLoader();
+    
+    const otp = document.getElementById('otp_code').value;
+    const email = localStorage.getItem('pendingAdminEmail');
+    const purpose = localStorage.getItem('pendingOtpPurpose') || 'admin_login';
+    
+    try {
+        const response = await fetch(`${API_BASE}/admin/verify-otp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                email: email, 
+                code: otp, // This should be 'code' as per schema
+                purpose: purpose 
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Invalid OTP');
+        }
+        
+        const data = await response.json();
+        
+        if (data.access_token) {
+            this.token = data.access_token;
+            adminToken = this.token;
+            localStorage.setItem('adminToken', this.token);
+            localStorage.removeItem('pendingAdminEmail');
+            localStorage.removeItem('pendingOtpPurpose');
+            
+            showSection('dashboardSection');
+            this.loadDashboard();
+            showToast('Login successful!');
+        }
+    } catch (error) {
+        showToast(error.message, false);
+    } finally {
+        hideLoader();
+    }
+}
+
+  async loadDashboard() {
+    if (!this.token) {
+      showSection('loginSection');
+      return;
+    }
+    
+    showLoader();
+    
+    try {
+      // Load dashboard stats
+      const statsResponse = await fetch(`${API_BASE}/admin/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (statsResponse.status === 401) {
+        // Token expired, logout and ask for re-login
+        this.logout();
+        showToast('Session expired. Please login again.', false);
+        return;
+      }
+      
+      if (!statsResponse.ok) {
+        throw new Error('Failed to load dashboard');
+      }
+      
+      const stats = await statsResponse.json();
+      
+      // Update dashboard stats
+      if (stats.dashboard) {
+        document.getElementById('totalApplicants').textContent = stats.dashboard.total_applicants || 0;
+        document.getElementById('totalOfficers').textContent = stats.dashboard.total_officers || 0;
+        document.getElementById('totalExistingOfficers').textContent = stats.dashboard.total_existing_officers || 0;
+        document.getElementById('pendingApprovals').textContent = stats.dashboard.pending_approvals || 0;
+      }
+      
+      showToast('Dashboard loaded successfully');
+      
+    } catch (error) {
+      console.error('Dashboard load error:', error);
+      showToast('Failed to load dashboard', false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async loadExistingOfficers() {
+    try {
+      showLoader();
+      
+      const status = document.getElementById('statusFilter').value;
+      let url = `${API_BASE}/admin/existing-officers`;
+      
+      if (status) {
+        url += `?status=${status}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.status === 401) {
+        this.logout();
+        throw new Error('Session expired. Please login again.');
+      }
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to load existing officers: ${response.status}`);
+      }
+      
+      const officers = await response.json();
+      this.renderExistingOfficers(officers);
+      
+    } catch (error) {
+      console.error('Error loading existing officers:', error);
+      showToast(`Error: ${error.message}`, false);
+      
+      const tbody = document.getElementById('existingOfficersTableBody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty-state">
+            <h3>Error Loading Officers</h3>
+            <p>${error.message}</p>
+            <button class="btn" onclick="adminApp.loadExistingOfficers()" style="margin-top: 1rem;">Retry</button>
+          </td>
+        </tr>
+      `;
+    } finally {
+      hideLoader();
+    }
+  }
+
+  renderExistingOfficers(officers) {
+    const tbody = document.getElementById('existingOfficersTableBody');
+    
+    if (!officers || officers.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="empty-state">
+            <h3>No existing officers found</h3>
+            <p>No existing officers have registered yet</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    
+    tbody.innerHTML = officers.map(officer => `
+      <tr data-officer-id="${officer.officer_id}">
+        <td><span class="officer-id">${officer.officer_id || 'N/A'}</span></td>
+        <td>${officer.full_name || 'N/A'}</td>
+        <td>${officer.email || 'N/A'}</td>
+        <td>${officer.rank || 'N/A'}</td>
+        <td>${officer.position || 'N/A'}</td>
+        <td>
+          <span class="status-badge ${officer.status === 'approved' ? 'status-approved' :
+                                    officer.status === 'verified' ? 'status-verified' :
+                                    officer.status === 'rejected' ? 'status-rejected' :
+                                    'status-pending'}">
+            ${officer.status || 'pending'}
+          </span>
+        </td>
+        <td>
+          <div class="action-menu">
+            <button class="action-btn view" onclick="adminApp.viewExistingOfficer('${officer.officer_id}')">
+              View
+            </button>
+            ${officer.status === 'pending' ? `
+              <button class="action-btn approve" onclick="adminApp.approveOfficer('${officer.officer_id}')">
+                Approve
+              </button>
+              <button class="action-btn verify" onclick="adminApp.verifyOfficer('${officer.officer_id}')">
+                Verify
+              </button>
+              <button class="action-btn reject" onclick="adminApp.rejectOfficer('${officer.officer_id}')">
+                Reject
+              </button>
+            ` : ''}
+            ${officer.status === 'verified' ? `
+              <button class="action-btn approve" onclick="adminApp.approveOfficer('${officer.officer_id}')">
+                Approve
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  async viewExistingOfficer(officerId) {
+    try {
+      showLoader();
+      
+      const response = await fetch(`${API_BASE}/admin/existing-officers/${officerId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch officer details');
+      }
+      
+      const officer = await response.json();
+      
+      const detailsHtml = `
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-label">Officer ID</div>
+            <div class="detail-value officer-id">${officer.officer_id}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Full Name</div>
+            <div class="detail-value">${officer.full_name}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">${officer.email}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Phone</div>
+            <div class="detail-value">${officer.phone || 'N/A'}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Rank</div>
+            <div class="detail-value">${officer.rank || 'N/A'}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Position</div>
+            <div class="detail-value">${officer.position || 'N/A'}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">
+              <span class="status-badge ${officer.status === 'approved' ? 'status-approved' :
+                                      officer.status === 'verified' ? 'status-verified' :
+                                      officer.status === 'rejected' ? 'status-rejected' :
+                                      'status-pending'}">
+                ${officer.status}
+              </span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Date of Enlistment</div>
+            <div class="detail-value">${officer.date_of_enlistment ? new Date(officer.date_of_enlistment).toLocaleDateString() : 'N/A'}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Date of Promotion</div>
+            <div class="detail-value">${officer.date_of_promotion ? new Date(officer.date_of_promotion).toLocaleDateString() : 'N/A'}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Years of Service</div>
+            <div class="detail-value">${officer.years_of_service || 'N/A'}</div>
+          </div>
+          
+          ${officer.nin_number ? `
+            <div class="detail-item">
+              <div class="detail-label">NIN Number</div>
+              <div class="detail-value">${officer.nin_number}</div>
+            </div>
+          ` : ''}
+          
+          ${officer.residential_address ? `
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <div class="detail-label">Residential Address</div>
+              <div class="detail-value">${officer.residential_address}</div>
+            </div>
+          ` : ''}
+          
+          ${officer.state_of_origin ? `
+            <div class="detail-item">
+              <div class="detail-label">State of Origin</div>
+              <div class="detail-value">${officer.state_of_origin}</div>
+            </div>
+          ` : ''}
+          
+          ${officer.bank_name ? `
+            <div class="detail-item">
+              <div class="detail-label">Bank Name</div>
+              <div class="detail-value">${officer.bank_name}</div>
+            </div>
+          ` : ''}
+          
+          ${officer.account_number ? `
+            <div class="detail-item">
+              <div class="detail-label">Account Number</div>
+              <div class="detail-value">${officer.account_number}</div>
+            </div>
+          ` : ''}
+          
+          ${officer.admin_notes ? `
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <div class="detail-label">Admin Notes</div>
+              <div class="detail-value">${officer.admin_notes}</div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      
+      document.getElementById('existingOfficerDetails').innerHTML = detailsHtml;
+      openModal('existingOfficerModal');
+      
+    } catch (error) {
+      showToast('Failed to fetch officer details', false);
+      console.error(error);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async approveOfficer(officerId) {
+    if (!confirm(`Approve officer ${officerId}?`)) return;
+    
+    try {
+      showLoader();
+      
+      const response = await fetch(`${API_BASE}/admin/existing-officers/${officerId}/approve`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'approved',
+          reason: 'Approved by admin'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to approve officer');
+      }
+      
+      await this.loadExistingOfficers();
+      showToast('Officer approved successfully');
+      
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async rejectOfficer(officerId) {
+    const reason = prompt('Enter reason for rejection:');
+    if (!reason) return;
+    
+    try {
+      showLoader();
+      
+      const response = await fetch(`${API_BASE}/admin/existing-officers/${officerId}/reject`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'rejected',
+          reason: reason
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to reject officer');
+      }
+      
+      await this.loadExistingOfficers();
+      showToast('Officer rejected');
+      
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async verifyOfficer(officerId) {
+    try {
+      showLoader();
+      
+      const response = await fetch(`${API_BASE}/admin/existing-officers/${officerId}/verify`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'verified',
+          reason: 'Verified by admin'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to verify officer');
+      }
+      
+      await this.loadExistingOfficers();
+      showToast('Officer verified successfully');
+      
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  openUpdateStatusModal(officerId, currentStatus) {
+    document.getElementById('updateOfficerId').value = officerId;
+    document.getElementById('newStatus').value = currentStatus || 'pending';
+    document.getElementById('statusReason').value = '';
+    openModal('updateStatusModal');
+  }
+
+  async updateOfficerStatus() {
+    const officerId = document.getElementById('updateOfficerId').value;
+    const newStatus = document.getElementById('newStatus').value;
+    const reason = document.getElementById('statusReason').value;
+    
+    if (!officerId) {
+      showToast('Invalid officer ID', false);
+      return;
+    }
+    
+    showLoader();
+    
+    try {
+      const response = await fetch(`${API_BASE}/admin/existing-officers/${officerId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: newStatus,
+          reason: reason || `Status changed to ${newStatus} by admin`
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to update officer status');
+      }
+      
+      closeModal('updateStatusModal');
+      await this.loadExistingOfficers();
+      showToast(`Officer status updated to ${newStatus}`);
+      
+    } catch (error) {
+      showToast(error.message, false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async loadApplicants() {
+    try {
+      showLoader();
+      const response = await fetch(`${API_BASE}/admin/all-applicants`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load applicants');
+      const applicants = await response.json();
+      this.renderTable('applicants', applicants);
+      showToast('Applicants loaded successfully');
+    } catch (error) {
+      console.error('Error loading applicants:', error);
+      showToast('Failed to load applicants', false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async loadOfficers() {
+    try {
+      showLoader();
+      const response = await fetch(`${API_BASE}/admin/all-officers`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load officers');
+      const officers = await response.json();
+      this.renderTable('officers', officers);
+      showToast('Officers loaded successfully');
+    } catch (error) {
+      console.error('Error loading officers:', error);
+      showToast('Failed to load officers', false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  async loadAdmins() {
+    try {
+      showLoader();
+      const response = await fetch(`${API_BASE}/admin/all-admins`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load admins');
+      const admins = await response.json();
+      this.renderTable('admins', admins);
+      showToast('Admins loaded successfully');
+    } catch (error) {
+      console.error('Error loading admins:', error);
+      showToast('Failed to load admins', false);
+    } finally {
+      hideLoader();
+    }
+  }
+
+  renderTable(tableType, data) {
+    const tbody = document.getElementById(`${tableType}TableBody`);
+    
+    if (!data || data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No ${tableType} found</td></tr>`;
+      return;
+    }
+    
+    if (tableType === 'applicants') {
+      tbody.innerHTML = data.map(applicant => `
+        <tr>
+          <td>${applicant.unique_id || 'N/A'}</td>
+          <td>${applicant.full_name}</td>
+          <td>${applicant.email}</td>
+          <td>${applicant.phone_number || 'N/A'}</td>
+          <td>
+            <span class="status-badge ${applicant.is_verified ? 'status-verified' : 'status-pending'}">
+              ${applicant.is_verified ? 'Verified' : 'Pending'}
+            </span>
+          </td>
+          <td>
+            <button class="action-btn edit" onclick="adminApp.editApplicant('${applicant.id}')">
+              Edit
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    } else if (tableType === 'officers') {
+      tbody.innerHTML = data.map(officer => `
+        <tr>
+          <td>${officer.unique_id || 'N/A'}</td>
+          <td>${officer.full_name}</td>
+          <td>${officer.email}</td>
+          <td>${officer.rank || 'N/A'}</td>
+          <td>${officer.position || 'N/A'}</td>
+          <td>
+            <button class="action-btn edit" onclick="adminApp.editOfficer('${officer.id}')">
+              Edit
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    } else if (tableType === 'admins') {
+      tbody.innerHTML = data.map(admin => `
+        <tr>
+          <td>${admin.full_name}</td>
+          <td>${admin.email}</td>
+          <td>${admin.is_superuser ? 'Yes' : 'No'}</td>
+          <td>
+            <span class="status-badge ${admin.is_active ? 'status-active' : 'status-inactive'}">
+              ${admin.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td>
+            <button class="action-btn delete" onclick="adminApp.deleteAdmin('${admin.email}')">
+              Delete
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  searchTable(tableType) {
+    const searchId = `search${tableType.charAt(0).toUpperCase() + tableType.slice(1)}`;
+    const query = document.getElementById(searchId).value.toLowerCase();
+    const rows = document.querySelectorAll(`#${tableType}TableBody tr`);
+    
+    rows.forEach(row => {
+      if (row.classList.contains('empty-state')) return;
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(query) ? '' : 'none';
+    });
+  }
+
+  switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    
+    document.getElementById(tabId).classList.add('active');
+    
+    if (tabId === 'existingOfficersTab') {
+      this.loadExistingOfficers();
+    } else if (tabId === 'applicantsTab') {
+      this.loadApplicants();
+    } else if (tabId === 'officersTab') {
+      this.loadOfficers();
+    } else if (tabId === 'adminsTab') {
+      this.loadAdmins();
+    }
+  }
+
+  logout() {
+    this.token = null;
+    adminToken = null;
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('pendingAdminEmail');
+    localStorage.removeItem('pendingOtpPurpose');
+    showSection('loginSection');
+    showToast('Logged out successfully');
+  }
+}
+
+// Utility Functions
+function showLoader() {
+  document.getElementById('loader').style.display = 'flex';
+}
+
+function hideLoader() {
+  document.getElementById('loader').style.display = 'none';
+}
+
+function showToast(message, isSuccess = true) {
+  const toastContainer = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${isSuccess ? 'success' : 'error'}`;
+  toast.textContent = message;
+  
+  toastContainer.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 100);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll('.section-container').forEach(section => {
+    section.classList.remove('active-section');
   });
+  document.getElementById(sectionId).classList.add('active-section');
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).style.display = 'flex';
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = 'none';
+}
+
+// Initialize app
+let adminApp;
+function initializeApp() {
+  adminApp = new AdminApp();
+  adminApp.initialize();
+  window.adminApp = adminApp;
+}
 </script>
 </body>
 </html>
